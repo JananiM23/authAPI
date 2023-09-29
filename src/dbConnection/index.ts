@@ -1,8 +1,8 @@
 import mongoose, { ConnectOptions } from "mongoose";
-import "dotenv/config";
 
-const mongodbURL = process.env.MONGO_DB_URL;
-const mongodbName = process.env.MONGO_DB_NAME;   
+
+const mongodbURL = "mongodb://localhost:27017";
+const mongodbName = "auth_collection";   
 
 const databaseUrl = `${mongodbURL}/${mongodbName}`;
 
