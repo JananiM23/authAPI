@@ -4,9 +4,11 @@ import AuthService from "../service/auth.service";
 import { returnSuccess, returnError } from "../middleware/ApiResponseHandler";
 import httpStatusCode from "http-status-codes";
 import user from "../dbConnection/model/user.model";
+import generateToken from "../service/token.service";
 
 const userService = new UserService();
 const authService = new AuthService();
+const jwtToken = new generateToken();
 
 export default class controller {
   login = async (req: Request, res: Response) => {
@@ -40,11 +42,25 @@ export default class controller {
       }
 
       if (findUser === true && findPassword === true) {
-        const resData = await userService.getUser(checkUser).then((data) => {
-          return data;
+        // const resData = await userService.getUser(checkUser).then((data) => {
+        //   return data;
+        // });
+
+        const accessTokenGenerate = await jwtToken.accessToken(data).then((accessData) => {
+          return accessData;
         });
-        const response = { Data: resData };
-        res.json(returnSuccess(httpStatusCode.OK, "Login successfully", response));
+
+        const refreshTokenGenerate = await jwtToken.refreshToken(data).then((refreshData) => {
+          return refreshData;
+        });
+
+        const token = {
+          accessTokenGenerate: accessTokenGenerate,
+          refreshTokenGenerate: refreshTokenGenerate
+        };
+
+        const resData = token;
+        res.json(returnSuccess(httpStatusCode.OK, "Login successfully", resData ));
       }
     } catch (error) {
       res.send(
