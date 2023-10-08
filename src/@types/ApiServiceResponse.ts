@@ -6,3 +6,9 @@ export declare type ApiServiceResponse = {
         data?: [] | object;
     }
 }
+
+export declare type loggerResponse = {
+    statusCode: number;
+    status: boolean;
+    message: string;
+}

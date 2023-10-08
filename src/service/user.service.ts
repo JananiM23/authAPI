@@ -5,11 +5,12 @@ import httpStatusCode from "http-status-codes";
 export default class userService {
     create = async (userData: any) => {
         try {
+            console.log(userData);
             const data = await user.create(userData);
             return returnSuccess(
                 httpStatusCode.OK, 
                 "User details created successfully",
-                userData
+                data
                 );
         } catch (error) {
             return returnError(

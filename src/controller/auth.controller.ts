@@ -81,7 +81,7 @@ export default class controller {
         res.send(
           returnSuccess(
             httpStatusCode.OK,
-            "you are successfully signed Up!",
+            "you are successfully created a account",
             data
           )
         );
