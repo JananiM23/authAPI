@@ -11,7 +11,7 @@ const authService = new AuthService();
 const jwtToken = new generateToken();
 
 export default class controller {
-  login = async (req: Request, res: Response) => {
+  signIn = async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body;
       const data = { username, password };
