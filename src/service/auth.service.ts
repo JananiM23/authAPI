@@ -1,6 +1,6 @@
 import authModel from "../dbConnection/model/user.model";
 import httpStatusCode from "http-status-codes";
-import { returnError } from "../middleware/ApiResponseHandler";
+import { returnError, returnSuccess } from "../middleware/ApiResponseHandler";
 import userService from "./user.service";
 
 export default class AuthService {
@@ -26,4 +26,22 @@ export default class AuthService {
       return returnError(httpStatusCode.BAD_REQUEST, "Internal error");
     }
   };
+
+  isEmailExists = async (email: string) => {
+    const message = 'Email id is already exists...please login';
+    if (!(await this.checkisEmailExists(email))) {
+      return returnError(httpStatusCode.BAD_REQUEST, message);
+    }
+    return returnSuccess(httpStatusCode.OK, 'Fine');
+  }
+
+  checkisEmailExists = async (email: string) => {
+    return authModel.count({ where: { email: email }}).then((count) => {
+      if(count !== 0) {
+        return true;
+      } else {
+        return false;
+      }
+    })
+  }
 }

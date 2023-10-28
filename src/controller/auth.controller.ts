@@ -5,6 +5,7 @@ import { returnSuccess, returnError } from "../middleware/ApiResponseHandler";
 import httpStatusCode from "http-status-codes";
 import user from "../dbConnection/model/user.model";
 import generateToken from "../service/token.service";
+import { stat } from "fs";
 
 const userService = new UserService();
 const authService = new AuthService();
@@ -75,24 +76,90 @@ export default class controller {
 
   signUp = async (req: Request, res: Response) => {
     try {
-      const { username, password } = req.body;
-      const data = { username, password };
-      const userDetails = await userService.create(data).then((data) => {
-        res.send(
-          returnSuccess(
-            httpStatusCode.OK,
-            "you are successfully created a account",
-            data
-          )
-        );
+      const data = req.body;
+      const userEmail = data.username;
+
+      const findUser: any = await userService.getUser(userEmail).then((data) => {
+        return data;
       });
-    } catch (error) {
-      res.send(
-        returnError(
-          httpStatusCode.BAD_REQUEST,
-          "Kindly check the username and password!"
-        )
-      );
+
+      if (findUser) {
+        const statusCode = httpStatusCode.FORBIDDEN;
+        const message = "Already user exist....So login please";
+        res.json(returnError(statusCode, message));
+      } else {
+        const userData: any = await userService.create(data).then((data) => {
+          const response = data;
+          if (!response){
+            return `Something went wrong in user accout creation`;
+          } else {
+            return response;
+          }
+        });
+
+        const message = "User signUp successfull";
+        const statusCode = httpStatusCode.OK;
+        const resData = userData;
+        res.json(returnSuccess(statusCode, message, resData));
+      }
     }
-  };
+    catch(error) {
+      const message = "User signUp failed";
+      const statusCode = httpStatusCode.BAD_REQUEST;
+      res.json(returnError(statusCode, message));
+    }
+  }
 }
+  // signUp = async (req: Request, res: Response) => {
+  //   try {
+  //     const { username, password, email } = req.body;
+  //     const data = { username, password, email };
+  //     const isExists = await authService.isEmailExists(req.body.email);
+  //     console.log(isExists);
+  //     if (isExists.response.status) {
+  //       try {
+  //       const userDetails = await userService.getUser(data).then((data) => {
+  //       res.send(
+  //         returnSuccess(
+  //           httpStatusCode.OK,
+  //           "you are successfully created a account"
+  //         )
+  //       );
+  //     });
+  //     } catch (error) {
+  //         res.send(
+  //           returnError(
+  //             httpStatusCode.BAD_REQUEST,
+  //             "something went wrong"
+  //           )
+  //         );
+  //       }
+  //     } else {
+  //       try {
+  //         const userDetails = await userService.create(data).then((data) => {
+  //           res.send(
+  //             returnSuccess(
+  //               httpStatusCode.OK,
+  //               "you are successfully created a account",
+  //               data
+  //             )
+  //         )})
+  //       } catch {
+  //         res.send(
+  //           returnError(
+  //             httpStatusCode.BAD_REQUEST,
+  //             "something went wrong"
+  //           )
+  //         );
+  //       }
+  //     }
+  //   } catch (error) {
+  //     res.send(
+  //       returnError(
+  //         httpStatusCode.BAD_REQUEST,
+  //         "Kindly check the username and password!"
+  //       )
+  //     );
+  //   }
+  // };
+// }
